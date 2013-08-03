@@ -29,11 +29,12 @@ integrate(min, Goal, R) :-
 	repeat,
 	(   call(Goal, V),
 	    arg(1, State, C),
-	    ( ( var(C) ; V < C ) -> U = V ; U = C ),
+	    ( ( var(C) ; V @< C ) -> U = V ; U = C ),
 	    nb_setarg(1, State, U),
 	    fail
 	;   arg(1, State, R)
-	).
+	),
+	!.
 
 integrate(count, Goal, R) :-
 	State = (0, _),
