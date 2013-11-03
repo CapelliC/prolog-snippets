@@ -33,7 +33,7 @@
 	  [op(100, fx, °) % prefix to name a variable
 	  ]).
 
-/* as reported by aBathologist, missing the following delcaration could lead to
+/* as reported by aBathologist, missing the following declaration could lead to
    an error == trapUndefined(): undefined: lifter:append/3 ==
 */
 :- use_module(library(lists), [append/3]).
