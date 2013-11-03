@@ -33,6 +33,11 @@
 	  [op(100, fx, °) % prefix to name a variable
 	  ]).
 
+/* as reported by aBathologist, missing the following delcaration could lead to
+   an error == trapUndefined(): undefined: lifter:append/3 ==
+*/
+:- use_module(library(lists), [append/3]).
+
 %%	funq(+P, -J)
 %
 %	to be able to debug, comment out goal_expansion directive
