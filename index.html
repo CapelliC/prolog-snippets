@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Prolog-snippets : Some sparse Prolog code I wrote (and sometime used)" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Prolog-snippets</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/CapelliC/prolog-snippets">View on GitHub</a>
+
+          <h1 id="project_title">Prolog-snippets</h1>
+          <h2 id="project_tagline">Some sparse Prolog code I wrote (and sometime used)</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/CapelliC/prolog-snippets/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/CapelliC/prolog-snippets/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>Some Prolog code I wrote, and sometime used</p>
+
+<p>About lifter, I can't resist the temptation to report part of a comment
+from SWI-Prolog mailing list [<a href="https://lists.iai.uni-bonn.de/pipermail/swi-prolog/2013/011893.html">https://lists.iai.uni-bonn.de/pipermail/swi-prolog/2013/011893.html</a>]</p>
+
+<h1></h1>
+
+<p>With <code>lifter</code>, the clause</p>
+
+<pre><code>longer(A,B) :-
+    length(A,º) &gt; length(B,º).
+</code></pre>
+
+<p>is expanded to</p>
+
+<pre><code>longer(A, B) :-
+    length(A, C),
+    length(B, D),
+    C &gt; D.
+</code></pre>
+
+<p>I like that this approach satisfies the desire for expressions that
+"evaluate in place" but keeps the flexibility and potent, multi-directional
+functionality of prolog relations.</p>
+
+<h1></h1>
+
+<p>License LGPL V2.1
+Author Ing. Capelli Carlo</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Prolog-snippets maintained by <a href="https://github.com/CapelliC">CapelliC</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
