@@ -1,7 +1,7 @@
 Some Prolog code I wrote, and sometime used
 
 About lifter, I can't resist the temptation to report part of a comment
-from SWI-Prolog mailing list [http://lists.iai.uni-bonn.de/pipermail/swi-prolog/2013/011893.html]
+from SWI-Prolog mailing list [https://lists.iai.uni-bonn.de/pipermail/swi-prolog/2013/011893.html]
 
 ===========
 
