@@ -1,6 +1,6 @@
 Some note on components
 
-+ lifter  : a bit of user friendly Prolog
++ lifter  : descriptive functions - a bit of user friendly Prolog
 + dirtree : a declarative interface to file system (xml at work), and a bit of ftp
 + lag     : linear aggregation - just a sketch by now, showing how efficient aggregation can be performed in Prolog
 
