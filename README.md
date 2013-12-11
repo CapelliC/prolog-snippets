@@ -1,5 +1,3 @@
-Some Prolog code I wrote, and sometime used
-
 Some note on components
 
 + lifter  : a bit of user friendly Prolog
