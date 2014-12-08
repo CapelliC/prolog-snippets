@@ -36,6 +36,17 @@ integrate(min, Goal, R) :-
 	),
 	!.
 
+integrate(min_list_associated, Goal, Min-Ws) :-
+	State = (_, [], _),
+	forall(call(Goal, V, W),	% W stands for witness
+	(	arg(1, State, C),	% C is current min
+		arg(2, State, CW),	% CW are current min witnesses
+		( ( var(C) ; V @< C ) -> U = V, Ws = [W] ; U = C, (C == V -> Ws = [W|CW] ; Ws = CW) ),
+		nb_setarg(1, State, U),
+		nb_setarg(2, State, Ws)
+	)),
+	arg(1, State, Min), arg(2, State, Ws).
+
 integrate(count, Goal, R) :-
 	State = (0, _),
 	repeat,
