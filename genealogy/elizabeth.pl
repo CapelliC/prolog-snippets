@@ -3,11 +3,16 @@
 
 elizabeth :- genealogy(elizabeth, 'Elizabeth II Family').
 
-parent_child('George VI', 					'Elizabeth II').
-parent_child('Lady Elizabeth Bowes-Lyon', 	'Elizabeth II').
+female('Elizabeth II').
+female('Lady Elizabeth Bowes-Lyon').
+female('Princess Mary of Teck').
+female('Cecilia Cavendish-Bentinck').
 
-parent_child('George V', 					'George VI').
-parent_child('Princess Mary of Teck', 		'George VI').
+parent_child('George VI', 'Elizabeth II').
+parent_child('Lady Elizabeth Bowes-Lyon','Elizabeth II').
 
-parent_child('Cecilia Cavendish-Bentinck',	'Lady Elizabeth Bowes-Lyon').
-parent_child('Claude Bowes-Lyon',			'Lady Elizabeth Bowes-Lyon').
+parent_child('George V', 'George VI').
+parent_child('Princess Mary of Teck', 'George VI').
+
+parent_child('Cecilia Cavendish-Bentinck','Lady Elizabeth Bowes-Lyon').
+parent_child('Claude Bowes-Lyon', 'Lady Elizabeth Bowes-Lyon').
