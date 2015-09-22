@@ -38,8 +38,10 @@ graph_window(Worker, Options) :-
 	% Worker will issue graph objects creation on G
 	call(Worker, Gp),
 
+	( memberchk(temp = Temp, Options) -> true ; temp = Temp ),
+	
 	% generate a temporary DOT script
-	TempDot = 'temp.dot',
+	format(atom(TempDot), '~s.dot', [Temp]),
 	open(TempDot, write, Dot),
 
 	graph2dot(Dot, Gp),
@@ -49,7 +51,7 @@ graph_window(Worker, Options) :-
 
 	% generate viewable
 	Ext = svg,
-	format(atom(Out), '~s.~s', [temp, Ext]),
+	format(atom(Out), '~s.~s', [Temp, Ext]),
 	format(atom(Spec), '-T~s', [Ext]),
 	process_create(path(dot), [Spec, '-o', file(Out), file(TempDot)], []).
 

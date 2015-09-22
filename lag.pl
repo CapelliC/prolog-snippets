@@ -47,12 +47,13 @@ integrate(min_list_associated, Goal, Min-Ws) :-
 
 integrate(count, Goal, R) :-
 	State = state(0, _),
-	forall(call(Goal),
-	(	arg(1, State, C),
+	(	Goal,
+		arg(1, State, C),
 		U is C+1,
-		nb_setarg(1, State, U)
-	)),
-	arg(1, State, R).
+		nb_setarg(1, State, U),
+		fail
+	;	arg(1, State, R)
+	).
 
 integrate(ave, Goal, Ave) :-
 	State = state(0, 0, _),
