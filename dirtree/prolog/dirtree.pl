@@ -1,4 +1,6 @@
-/*  Author:        Carlo Capelli
+/*  Part of SWI-Prolog
+
+    Author:        Carlo Capelli
     E-mail:        cc.carlo.cap@gmail.com
     Copyright (C): Carlo Capelli
 
@@ -25,28 +27,34 @@
 */
 
 :- module(dirtree,
-	  [dirtree/2,                % +Root, -Tree
-	   dirtree/3,                % +Path, +Curr, -Tree
-	   sortree/2,                % +Tree, -Sorted
-	   sortree/3,                % +Compare, +Tree, -Sorted
-	   compare_by_attr/4,	     % +Attribute, +Item1, +Item2, -Rel
-	   extension_embedding_enable/0,
-	   extension_to_embed/1,     % +Ext
-	   source_target/2,          % +Path, +XML
-	   extensions_from_saved/1,  % -Extensions
-	   counted_extensions/1,     % -CountedExtensions
-	   get_ftp_ls_output/2,
-	   get_ftp_ls_output//1,
-	   dirzap/1,                 % +Root remove entire subtree from Root
-	   capture_attrs/3,	     % previsit visit
-	   assign_path/2
-	  ]).
+	[dirtree/2		% +Root, -Tree
+	,dirtree/3		% +Path, +Curr, -Tree
+	,sortree/2		% +Tree, -Sorted
+	,sortree/3		% +Compare, +Tree, -Sorted
+	,compare_by_attr/4	% +Attribute, +Item1, +Item2, -Rel
+	,extension_embedding/0	%
+	,extension_to_embed/1	% +Ext
+	,dom_ext_file/3		% +DOM, ?Ext, ?File
+	,dom_kind_ext_entry/4	% +DOM, +Kind, ?Ext, ?Entry
+	,source_target/2		% +Path, +XML
+	,extensions_from_saved/1	% -Extensions
+	,extensions_from_DOM/2	% +Dom, -Extensions
+	,counted_extensions/1	% -CountedExtensions
+	,counted_extensions/2	% +DOM, -Counted
+	,get_ftp_ls_output/2	% +Stdout, -Ftped:list
+	,get_ftp_ls_output//1	% -Ftped:list
+	,dirzap/1		% +Root
+	,capture_attrs/3		% +Attr, +Elem, ?Values
+	,assign_path/2		% +DOM, -DOM
+	,entry_attribute/3	% +DOM, +Attr, ?Value
+	,entry_upd_attr/4       % +Old, +Attr, +Val, -New
+	,entry_path_name/3	% +DOM, ?Path, ?Name
+	,entry_extensions/4	% +DOM, +Tag, +Exts, ?Entry
+	]).
 
-:- use_module([library(lambda),
-	       library(dcg/basics),
-	       library(aggregate),
-	       library(xpath)
-	      ]).
+:- use_module(library(dcg/basics)).
+:- use_module(library(aggregate)).
+:- use_module(library(xpath)).
 
 /** <module> Filesystem listing to XML.
 
@@ -60,18 +68,39 @@ output.
 
 */
 
+%% extension_to_embed(?Extension) is det.
+%
+%  declare which file kind must have its text loaded
+%
 :- dynamic extension_to_embed/1.
+
+%% source_target(Source, Target) is det.
+%
+%  cache a correspondence between folder path and save file
+%
 :- dynamic source_target/2.
 
 %%	dirtree(+Root, ?Xml) is det.
-%%	dirtree(+Path, +Item, ?Xml) is det.
 %
-%	start actual scan (need current path)
+%	Start actual scan, store Root path on Root element.
+%
+%	@arg Root the directory *absolute* path from where to start.
+%	@arg Xml the structure read from directory Root.
 %
 dirtree(P, T) :-
-	dirtree(P, P, T).
+	dirtree(P, P, S),
+	S = element(dir, [N, D], X),
+	T = element(dir, [N, D, path = P], X).
 
-dirtree(P, Dir, element(dir, [name = Dir, size = S, path = P], D)) :-
+%%	dirtree(+Path, +Item, ?Xml) is det.
+%
+%	Start actual scan from provided path.
+%
+%	@arg Path actual path to scan.
+%	@arg Root the directory *absolute* path from where to start.
+%	@arg Xml the structure read from directory Root.
+%
+dirtree(P, Dir, element(dir, [name = Dir, size = S], D)) :-
 	exists_directory(P),
 	!,
 	scandir(P, Dir, D),
@@ -81,9 +110,9 @@ dirtree(P, Dir, element(dir, [name = Dir, size = S, path = P], D)) :-
 		      ), S).
 dirtree(P, File, element(file, A, Q)) :-
 	(   catch((exists_file(P), size_file(P, S)), E, (print_message(error, E), S = 0))
-	->  A = [name = File, size = S, path = P],
+	->  A = [name = File, size = S],
 	    embed(P, Q)
-	;   A = [name = File, size = 0, path = P]
+	;   A = [name = File, size = 0]
 	).
 
 scandir(P, _Dir, D) :-
@@ -93,41 +122,63 @@ scandir(P, _Dir, D) :-
 		     dirtree(Q, E, X)), D).
 
 %%	sortree(+T, -S)
-%%	sortree(:P, +T, -S)
 %
 %	sort XML elements by name
 %
 sortree(T, S) :-
-	sortree(compare_by_attr(name), T, S).
+	sortree(compare_by_attr(name), T, S), !.
 
 :- meta_predicate sortree(3, +, -).
 
+%% sortree(+C, +E, -S) is det.
+%
+%  performs a predsort of each branch found in element E
+%
+%  @arg C comparison predicate
+%  @arg E input element, to be sorted
+%  @arg S sorted element
+%
 sortree(C, element(E, As, Cs), element(E, As, Ss)) :-
 	predsort(C, Cs, Ts),
-	maplist(sortree, Ts, Ss).
+	!, maplist(sortree, Ts, Ss).
 sortree(_C, E, E).
 
+%% compare_by_attr(A, R, X, Y) is det.
+%
+%  See predsort for a description. Avoid returning = of entries will be deleted.
+%
+%  @arg A attribute to use for comparison
+%  @arg R comparison result
+%  @arg X attribute on left node
+%  @arg Y attribute on right node
+%
 compare_by_attr(A, R, X, Y) :-
 	xpath(X, /self(@A), Vx),
 	xpath(Y, /self(@A), Vy),
 	( Vx @< Vy -> R = < ; R = > ).
 
-%%	extension_embedding_enable is det
+%%	extension_embedding is det
 %
 %	call before dirtree to load source text lines (not parsed)
 %
-extension_embedding_enable :-
-	maplist(\E^(  extension_to_embed(E)
-		   -> true
-		   ;  assert(extension_to_embed(E))), [pl, php, tpl]).
+extension_embedding :-
+	maplist(extension_embedding, [pl, php, tpl]).
+extension_embedding(E) :-
+	extension_to_embed(E)
+	-> true
+	;  assert(extension_to_embed(E)).
 
 embed(P, XLines) :-
 	file_name_extension(_, X, P),
 	extension_to_embed(X),
 	setup_call_cleanup(open(P, read, H), fetch_lines(H, Lines), close(H)),
-	maplist(\Line^XLine^(XLine = element(line, [text = Line], [])), Lines, XLines),
+	%maplist(\Line^XLine^(XLine = element(line, [text = Line], [])), Lines, XLines),
+	maplist(embed_line, Lines, XLines),
 	!.
 embed(_, []).
+
+embed_line(Line, XLine) :-
+	XLine = element(line, [text = Line], []).
 
 fetch_lines(H, L) :-
 	read_line_to_codes(H, Codes),
@@ -149,12 +200,45 @@ extensions_from_saved(Exts) :-
 	load_xml_file(XML, DOM),
 	extensions_from_DOM(DOM, Exts).
 
+%% dom_ext_file(+DOM, ?Ext, ?File) is nondet.
+%
+%  get the extension from a filename entry
+%
+%  @arg DOM XML representation of directory
+%  @arg Ext filename extension
+%  @arg File filename
+%
+dom_ext_file(DOM, Ext, File) :-
+	xpath(DOM, //file(@name), File),
+	file_name_extension(_, Ext, File).
+
+%% dom_kind_ext_entry(DOM, Kind, Ext, Entry) is nondet.
+%
+%  get filename extension of entry
+%
+%  @arg DOM XML representation of directory
+%  @arg Kind attribute to match
+%  @arg Ext pathname extension
+%  @arg Entry the XML element/3 representation matched
+%
+dom_kind_ext_entry(DOM, Kind, Ext, Entry) :-
+	xpath(DOM, //Kind, Entry),
+	xpath(Entry, /self(@name), Name),
+	file_name_extension(_, Ext, Name).
+
+%% extensions_from_DOM(DOM, Exts) is det.
+%
+%  describe extensions_from_DOM
+%
+%  @arg DOM describe DOM
+%  @arg Exts describe Exts
+%
 extensions_from_DOM(DOM, Exts) :-
 	aggregate_all(set(X), (xpath(DOM, //file(@name), File),
 			       file_name_extension(_, X, File)
 			      ), Exts).
 
-%%	counted_extensions(Counted) is det.
+%%	counted_extensions(?Counted) is det.
 %
 %       get all extensions and count each file
 %
@@ -167,6 +251,20 @@ counted_extensions(Counted) :-
 			        aggregate(count, member(X, Exts), Count)
 			 ), Counted).
 
+%% counted_extensions(+DOM, -Counted:list) is det.
+%
+%  aggregate
+%
+%  @arg DOM XML folders representation
+%  @arg Counted a list of Extension = OccurrenceCount
+%
+counted_extensions(DOM, Counted) :-
+	setof(X = Count, (findall(Ext, (
+				xpath(DOM, //file(@name), File),
+				file_name_extension(_, Ext, File)), Exts),
+			        aggregate(count, member(X, Exts), Count)
+			 ), Counted).
+/*
 counted_extensions_old(Counted) :-
 	source_target(_, XML),
 	load_xml_file(XML, DOM),
@@ -176,15 +274,22 @@ counted_extensions_old(Counted) :-
 					   file_name_extension(_, Ext, File)
 					  ), C), Count = (Ext = C)
 			   ), ExtS, Counted).
+*/
 
 %%	get_ftp_ls_output(Stdout, Ftped)
 %
-%	parse output of ftp 'ls ...'
+%	parse output of ftp command 'ls ...'
 %
 get_ftp_ls_output(Stdout, Ftped) :-
 	phrase_from_file(get_ftp_ls_output(Ftped), Stdout).
 
-eos([],[]).
+%%	get_ftp_ls_output(A,B,Entries) is det.
+%
+%	parse output of ftp command 'ls ...',
+%	capturing all attributes found (and known)
+%
+%	@arg Entries XML structure from sequential listing of attributed entries
+%
 get_ftp_ls_output([]) --> eos.
 get_ftp_ls_output([E|Es]) -->
 	ftp_ls_entry(E),
@@ -271,3 +376,45 @@ assign_path(Path, element(T, A, S), element(T, Wp, Sp)) :-
 	->  maplist(assign_path(Next), S, Sp)
 	;   Sp = S
 	).
+
+%% entry_attribute(element(+DOM, +Attr, ?Value) is det.
+%
+%  get a named value from node attributes
+%
+%  @arg DOM
+%  @arg Attr name of attribute
+%  @arg Value value of attribute
+%
+entry_attribute(element(_,Attrs,_), Attr, Value) :-
+	memberchk(Attr=Value, Attrs).
+
+entry_upd_attr(Old, Attr, Val, New) :-
+	Old = element(T, As, C),
+	New = element(T, Bs, C),
+	(   append(L, [Attr=_ |R], As)
+	->  append(L, [Attr=Val |R], Bs)
+	;   Bs = [Attr=Val |As]
+	).
+
+%% entry_path_name(+DOM, ?Path, ?Name) is det.
+%
+%  get path and name of element
+%
+%  @arg E DOM structure
+%  @arg Path element file path
+%  @arg Name element file name
+%
+entry_path_name(E, Path, Name) :-
+	entry_attribute(E, path, Path),
+	entry_attribute(E, name, Name).
+
+%%	entry_with_extensions(DOM, Tag, Exts, Entry) is nondet.
+%
+%	get all entries with filename matching extension
+%
+entry_extensions(DOM, Tag, Exts, Entry) :-
+	Patt =.. [//,Tag],
+	xpath(DOM, Patt, Entry),
+	entry_attribute(Entry, name, N),
+	file_name_extension(_, X, N),
+	memberchk(X, Exts).

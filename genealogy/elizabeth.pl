@@ -31,3 +31,5 @@ is_maternal_aunt(Person, Aunt) :-
 	female(Parent),
 	parent_child(GranParent, Parent),
 	parent_child(GranParent, Aunt), Aunt \= Parent.
+
+

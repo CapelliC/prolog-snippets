@@ -80,3 +80,4 @@ user:goal_expansion(X, Y) :-
 	-> !, fail % leave unchanged
 	;
 	funq(X, Y).
+

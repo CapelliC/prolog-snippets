@@ -5,7 +5,6 @@
 */
 
 :- use_module(lifter).
-:- use_module(library(lambda)).
 
 fac(N, F) :-
 	N > 1 -> F is fac(° is N-1, °) * N ; F is 1.
@@ -13,15 +12,15 @@ fac(N, F) :-
 delta_fields(FA, FB, FD) :-
 	sort(FA, SA),
 	sort(FB, SB),
-	append(maplist(\X^Y^(Y = +X), ord_subtract(SA, SB, °), °)
-	      ,maplist(\X^Y^(Y = -X), ord_subtract(SB, SA, °), °)
+	append(maplist([X,Y]>>(Y = +X), ord_subtract(SA, SB, °), °)
+	      ,maplist([X,Y]>>(Y = -X), ord_subtract(SB, SA, °), °)
 	      ,FD).
 
 delta_fields_named(FA, FB, FD) :-
-    append(maplist(\X^Y^(Y = +X),
+    append(maplist([X,Y]>>(Y = +X),
 		   ord_subtract(sort(FA, °A),
 				sort(FB, °B), °), °)
-          ,maplist(\X^Y^(Y = -X),
+          ,maplist([X,Y]>>(Y = -X),
 		   ord_subtract(B, A, °), °)
           ,FD).
 
@@ -41,7 +40,7 @@ test(2) :-
 % simple string processing
 %
 test(3) :-
-	append("1", "2", °) == "12".
+	append(`1`, `2`, °) == `12`.
 
 % test named variables
 %
