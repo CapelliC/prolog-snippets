@@ -1,6 +1,6 @@
 /** <module> bridge_cards
  *
- *  Describe your module.
+ *  answering http://stackoverflow.com/q/36845448/874024
  *  --------
  *
  *  source file /home/carlo/prolog/snippets/bridge_cards.pl
@@ -17,7 +17,7 @@
 
 %%  bridge_cards is det.
 %
-%   Describe this default entry point.
+%   showcase HTML layout facilities
 %
 bridge_cards :-
 	hands_sorted(Hands),
