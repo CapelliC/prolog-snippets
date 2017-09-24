@@ -76,7 +76,7 @@ conj([J|Js], T, (J, R)) :- conj(Js, T, R).
 
 :- multifile user:goal_expansion/2.
 user:goal_expansion(X, Y) :-
-	( current_prolog_flag(xref, true) ; X = (_ , _) ; X = (_ ; _) ; X = (_ -> _) )
+	( current_prolog_flag(xref, true) ; X = (_ , _) ; X = (_ ; _) /* ; X = (_ -> _) */ )
 	-> !, fail % leave unchanged
 	;
 	funq(X, Y).
