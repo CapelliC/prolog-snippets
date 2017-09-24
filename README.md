@@ -6,7 +6,7 @@ Some note on components
 
 About lifter, I can't resist...
 
-here is part of a comment from SWI-Prolog mailing list (original list no more availble, updated to [http://swi-prolog.996271.n3.nabble.com/Renaming-map-dict-class-type-tp13585p13742.html]),
+here is part of a comment from SWI-Prolog mailing list (original list no more available, see to http://swi-prolog.996271.n3.nabble.com/Renaming-map-dict-class-type-tp13585p13742.html),
 
 explaining what lifter is.
 
