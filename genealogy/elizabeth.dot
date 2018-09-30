@@ -1,0 +1,96 @@
+digraph "graph_window" {
+ node [
+  style = "radial"
+  fillcolor = "white"
+  shape = "ellipse"
+  label = ""
+ ]
+ edge [
+  arrowhead = "vee"
+ ]
+ subgraph "1" {
+   rank = "same"
+   rankdir = "LR"
+  subgraph "['Cecilia Cavendish-Bentinck','Claude Bowes-Lyon']" {
+   "'Cecilia Cavendish-Bentinck'" [
+     fillcolor = "white:red"
+     label = "Cecilia Cavendish-Bentinck"
+   ]
+   "'Claude Bowes-Lyon'" [
+     fillcolor = "white:green"
+     label = "Claude Bowes-Lyon"
+   ]
+  }
+  subgraph "['George V','Princess Mary of Teck']" {
+   "'George V'" [
+     fillcolor = "white:green"
+     label = "George V"
+   ]
+   "'Princess Mary of Teck'" [
+     fillcolor = "white:red"
+     label = "Princess Mary of Teck"
+   ]
+  }
+ }
+ subgraph "2" {
+   rank = "same"
+   rankdir = "LR"
+  subgraph "['George VI','Lady Elizabeth Bowes-Lyon']" {
+   "'George VI'" [
+     fillcolor = "white:green"
+     label = "George VI"
+   ]
+   "'Lady Elizabeth Bowes-Lyon'" [
+     fillcolor = "white:red"
+     label = "Lady Elizabeth Bowes-Lyon"
+   ]
+  }
+  "'Rose Bowes-Lyon'" [
+    fillcolor = "white:red"
+    label = "Rose Bowes-Lyon"
+  ]
+ }
+ subgraph "3" {
+   rank = "same"
+   rankdir = "LR"
+  "'Elizabeth II'" [
+    fillcolor = "white:red"
+    label = "Elizabeth II"
+  ]
+ }
+ "['George V','Princess Mary of Teck']" [
+   shape = "point"
+   width = "0.1"
+   height = "0.1"
+ ]
+ "['Cecilia Cavendish-Bentinck','Claude Bowes-Lyon']" [
+   shape = "point"
+   width = "0.1"
+   height = "0.1"
+ ]
+ "['George VI','Lady Elizabeth Bowes-Lyon']" [
+   shape = "point"
+   width = "0.1"
+   height = "0.1"
+ ]
+ "'George V'" -> "['George V','Princess Mary of Teck']" [
+ ]
+ "'Princess Mary of Teck'" -> "['George V','Princess Mary of Teck']" [
+ ]
+ "['George V','Princess Mary of Teck']" -> "'George VI'" [
+ ]
+ "'Cecilia Cavendish-Bentinck'" -> "['Cecilia Cavendish-Bentinck','Claude Bowes-Lyon']" [
+ ]
+ "'Claude Bowes-Lyon'" -> "['Cecilia Cavendish-Bentinck','Claude Bowes-Lyon']" [
+ ]
+ "['Cecilia Cavendish-Bentinck','Claude Bowes-Lyon']" -> "'Lady Elizabeth Bowes-Lyon'" [
+ ]
+ "['Cecilia Cavendish-Bentinck','Claude Bowes-Lyon']" -> "'Rose Bowes-Lyon'" [
+ ]
+ "'George VI'" -> "['George VI','Lady Elizabeth Bowes-Lyon']" [
+ ]
+ "'Lady Elizabeth Bowes-Lyon'" -> "['George VI','Lady Elizabeth Bowes-Lyon']" [
+ ]
+ "['George VI','Lady Elizabeth Bowes-Lyon']" -> "'Elizabeth II'" [
+ ]
+}
