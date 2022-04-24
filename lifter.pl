@@ -12,7 +12,7 @@
         ex: p(.q(.°.).r(.s(.°.).).) ~= q(.Q.), s(.S.), p(.Q.r(.S.).)
 
     Allows to name variables to be reused.
-        ex: p(.q(.Â°X.).r(.X.).) ~= q(.X.), p(.X.r(.X.).)
+        ex: p(.q(.°X.).r(.X.).) ~= q(.X.), p(.X.r(.X.).)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
