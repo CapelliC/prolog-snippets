@@ -8,11 +8,11 @@
 
     Placeholders lifter - hence the name
 
-    Replace each ° occurrence with a (new) var and join.
-        ex: p(.q(.°.).r(.s(.°.).).) ~= q(.Q.), s(.S.), p(.Q.r(.S.).)
+    Replace each Â° occurrence with a (new) var and join.
+        ex: p(.q(.Â°.).r(.s(.Â°.).).) ~= q(.Q.), s(.S.), p(.Q.r(.S.).)
 
     Allows to name variables to be reused.
-        ex: p(.q(.°X.).r(.X.).) ~= q(.X.), p(.X.r(.X.).)
+        ex: p(.q(.Â°X.).r(.X.).) ~= q(.X.), p(.X.r(.X.).)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@
 */
 
 :- module(lifter,
-    [op(100, fx, (°)) % prefix to name a variable
+    [op(100, fx, (Â°)) % prefix to name a variable
     ]).
 
 /* as reported by aBathologist, missing the following declaration could lead to
@@ -59,7 +59,7 @@ findq(P, T, Z) :-
   ).
 
 firstq([A|As], T, [T|As]) :-
-  A == ° ; nonvar(A), A = ° T, var(T) .
+  A == Â° ; nonvar(A), A = Â° T, var(T) .
 firstq([A|As], T, [A|Bs]) :-
   firstq(As, T, Bs).
 
