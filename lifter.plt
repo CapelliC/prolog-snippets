@@ -7,21 +7,21 @@
 :- use_module(lifter).
 
 fac(N, F) :-
-  N > 1 -> F is fac(° is N-1, °) * N ; F is 1.
+  N > 1 -> F is fac(# is N-1, #) * N ; F is 1.
 
 delta_fields(FA, FB, FD) :-
   sort(FA, SA),
   sort(FB, SB),
-  append(maplist([X,Y]>>(Y = +X), ord_subtract(SA, SB, °), °)
-        ,maplist([X,Y]>>(Y = -X), ord_subtract(SB, SA, °), °)
+  append(maplist([X,Y]>>(Y = +X), ord_subtract(SA, SB, #), #)
+        ,maplist([X,Y]>>(Y = -X), ord_subtract(SB, SA, #), #)
         ,FD).
 
 delta_fields_named(FA, FB, FD) :-
   append(maplist([X,Y]>>(Y = +X),
-     ord_subtract(sort(FA, °A),
-      sort(FB, °B), °), °)
+     ord_subtract(sort(FA, #A),
+      sort(FB, #B), #), #)
         ,maplist([X,Y]>>(Y = -X),
-     ord_subtract(B, A, °), °)
+     ord_subtract(B, A, #), #)
         ,FD).
 
 :- begin_tests(lifter).
@@ -40,7 +40,7 @@ test(2) :-
 % simple string processing
 %
 test(3) :-
-  append(`1`, `2`, °) == `12`.
+  append(`1`, `2`, #) == `12`.
 
 % test named variables
 %
